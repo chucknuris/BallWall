@@ -409,7 +409,7 @@ void printinfo() {
 			printchars("Press the space bar to continue", f*31, h);
 		}
 		printchars("h key: Display info.", x, 2*h - 1.0f);
-		printchars("Scape key: Exit the game.", x, h - 1.0f);
+		printchars("Escape key: Exit the game.", x, h - 1.0f);
 	}
 }
 
