@@ -1,18 +1,1 @@
-﻿  ballwall.cpp
-  camera.cpp
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(26,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(27,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(28,28): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(29,26): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(51,32): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(52,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(53,25): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(56,48): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(57,42): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\nuris\Desktop\BallwallProject\BallWall\camera.cpp(58,43): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  loadCompileShaders.cpp
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 378 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  ballwall.vcxproj -> C:\Users\nuris\Desktop\BallwallProject\BallWall\ballwall.exe
+﻿
