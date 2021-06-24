@@ -124,117 +124,122 @@ void setVertexArrays() {
 	/*********************** WALLS *********************/
 	{
 		struct v6f {
-			float v[6];
+			float v[6]; // the 3 first floats are the point coordinates and the other 3 are the normal coordinates.
 		};
 
 		float r = holeradius; // hole radius
 		float h = holedist; // distance between hole centers
 		int N = 36; // sides of circle, this value must be a multiple of 4.
-		float d = h + 1.4f*r; // half side length
-		float z = 0.09f*d; // half wall thickness
+		float d = h + 1.4f * r; // half side length
+		float z = 0.09f * d; // half wall thickness
 		glGenVertexArrays(9, wallId); // generate the vertex array indices for all 9 walls
 		for (int j = 0; j != 9; j++) {
-			vector<v6f> vnbuffer;
+			vector<v6f> vnbuffer; // CREATE A NEW VECTOR TO STORE THE THE POINT COORDINATES AND NORMALS.
 			{
-				float cx = (j%3 - 1)*h; // hole center x coordinate
-				float cy = (j/3 - 1)*h; // hole center y coordinate
-				double angle = 0.0, delta = 2*M_PI/N;
+				float cx = (j % 3 - 1) * h; // hole center x coordinate           |6 7 8|
+				float cy = (j / 3 - 1) * h; // hole center y coordinate           |3 4 5|
+										    //          hole position for each j: |0 1 2|
+				double angle = 0.0, delta = 2 * M_PI / N;
 				float c = 1.0, s = 0.0;
-				for (int i = 0; i != N; i++) { // border of circular hole
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, -z, -c, -s, 0.0f});
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, -c, -s, 0.0f});
+				for (int i = 0; i != N; i++) { // border of circular hole (RED AREA)
+					// 2 triangle are generated. All normals point to the xy hole center coordinates
+										  //    x           y       z  nx  ny  nz
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, -z, -c, -s, 0.0f }); // POINT 1, FIGURE 3
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, -c, -s, 0.0f }); // POINT 2, FIGURE 3
 					angle += delta;
 					s = (float)sin(angle); c = (float)cos(angle);
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, -z, -c, -s, 0.0f});
-					vnbuffer.push_back(vnbuffer[vnbuffer.size() - 2]);
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, -c, -s, 0.0f});
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, -z, -c, -s, 0.0f});
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, -z, -c, -s, 0.0f }); // POINT 3, FIGURE 3
+					vnbuffer.push_back(vnbuffer[vnbuffer.size() - 2]); // POINT 4 (SAME POINT 2), FIGURE 3
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, -c, -s, 0.0f }); // POINT 5, FIGURE 3
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, -z, -c, -s, 0.0f }); // POINT 6 (SAME POINT 3), FIGURE 3
 				}
 
 				angle = 0.0;
 				c = 1.0; s = 0.0;
-				for (int i = 0; i < N/4; i++) { // triangles from the upper right wall corner to the hole border
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
-					vnbuffer.push_back(v6f{d, d, z, 0.0f, 0.0f, 1.0f});
+				for (int i = 0; i < N / 4; i++) { // (FIGURE 1, YELLOW) triangles from the upper right wall corner to the hole border
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
+					vnbuffer.push_back(v6f{ d, d, z, 0.0f, 0.0f, 1.0f });
 					angle += delta;
 					s = (float)sin(angle); c = (float)cos(angle);
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
 				}
 
-				angle = M_PI/2;
+				angle = M_PI / 2;
 				c = 0.0; s = 1.0;
-				for (int i = 0; i < N/4; i++) { // triangles from the upper left wall corner to the hole border
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
-					vnbuffer.push_back(v6f{-d, d, z, 0.0f, 0.0f, 1.0f});
+				for (int i = 0; i < N / 4; i++) { // (FIGURE 1, GREEN) triangles from the upper left wall corner to the hole border
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
+					vnbuffer.push_back(v6f{ -d, d, z, 0.0f, 0.0f, 1.0f });
 					angle += delta;
 					s = (float)sin(angle); c = (float)cos(angle);
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
 				}
 
 				angle = M_PI;
 				c = -1.0; s = 0.0;
-				for (int i = 0; i < N/4; i++) { // triangles from the lower left wall corner to the hole border
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
-					vnbuffer.push_back(v6f{-d, -d, z, 0.0f, 0.0f, 1.0f});
+				for (int i = 0; i < N / 4; i++) { // (FIGURE 1, CYAN) triangles from the lower left wall corner to the hole border
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
+					vnbuffer.push_back(v6f{ -d, -d, z, 0.0f, 0.0f, 1.0f });
 					angle += delta;
 					s = (float)sin(angle); c = (float)cos(angle);
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
 				}
 
-				angle = 1.5*M_PI;
+				angle = 1.5 * M_PI;
 				c = 0.0; s = -1.0;
-				for (int i = 0; i < N/4; i++) { // triangles from the lower right wall corner to the hole border
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
-					vnbuffer.push_back(v6f{d, -d, z, 0.0f, 0.0f, 1.0f});
+				for (int i = 0; i < N / 4; i++) { // (FIGURE 1, MAGENTA) triangles from the lower right wall corner to the hole border
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
+					vnbuffer.push_back(v6f{ d, -d, z, 0.0f, 0.0f, 1.0f });
 					angle += delta;
 					s = (float)sin(angle); c = (float)cos(angle);
-					vnbuffer.push_back(v6f{r*c + cx, r*s + cy, z, 0.0f, 0.0f, 1.0f});
+					vnbuffer.push_back(v6f{ r * c + cx, r * s + cy, z, 0.0f, 0.0f, 1.0f });
 				}
 
-				// missing wall front face triangles:
-				vnbuffer.push_back(v6f{d, -d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{d, d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{r + cx, cy, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{d, d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{-d, d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{cx, r + cy, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{-d, d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{-d, -d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{cx - r, cy, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{-d, -d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{d, -d, z, 0.0f, 0.0f, 1.0f});
-				vnbuffer.push_back(v6f{cx, cy - r, z, 0.0f, 0.0f, 1.0f});
+				// missing wall front face triangles  (FIGURE 1, BLUE):
+				vnbuffer.push_back(v6f{ d, -d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ d, d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ r + cx, cy, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ d, d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ -d, d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ cx, r + cy, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ -d, d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ -d, -d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ cx - r, cy, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ -d, -d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ d, -d, z, 0.0f, 0.0f, 1.0f });
+				vnbuffer.push_back(v6f{ cx, cy - r, z, 0.0f, 0.0f, 1.0f });
+
+				// THE NEXT AREA (LIGHT GRAY) CAN BE SEEN ONLY IN THE FIGURE 4 (BACK VIEW):
 				// wall top side (+y)
-				vnbuffer.push_back(v6f{d, d, z, 0.0f, 1.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, d, -z, 0.0f, 1.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, d, -z, 0.0f, 1.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, d, -z, 0.0f, 1.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, d, z, 0.0f, 1.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, d, z, 0.0f, 1.0f, 0.0f});
+				vnbuffer.push_back(v6f{ d, d, z, 0.0f, 1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, d, -z, 0.0f, 1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, d, -z, 0.0f, 1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, d, -z, 0.0f, 1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, d, z, 0.0f, 1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, d, z, 0.0f, 1.0f, 0.0f });
 
 				// wall bottom side (-y)
-				vnbuffer.push_back(v6f{d, -d, -z, 0.0f, -1.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, -d, z, 0.0f, -1.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, -d, -z, 0.0f, -1.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, -d, z, 0.0f, -1.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, -d, -z, 0.0f, -1.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, -d, z, 0.0f, -1.0f, 0.0f});
+				vnbuffer.push_back(v6f{ d, -d, -z, 0.0f, -1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, -d, z, 0.0f, -1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, -d, -z, 0.0f, -1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, -d, z, 0.0f, -1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, -d, -z, 0.0f, -1.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, -d, z, 0.0f, -1.0f, 0.0f });
 
 				// wall left side (-x)
-				vnbuffer.push_back(v6f{-d, d, z, -1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, d, -z, -1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, -d, -z, -1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, -d, -z, -1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, -d, z, -1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{-d, d, z, -1.0f, 0.0f, 0.0f});
+				vnbuffer.push_back(v6f{ -d, d, z, -1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, d, -z, -1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, -d, -z, -1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, -d, -z, -1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, -d, z, -1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ -d, d, z, -1.0f, 0.0f, 0.0f });
 
 				// wall right side (+x)
-				vnbuffer.push_back(v6f{d, d, -z, 1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, d, z, 1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, -d, -z, 1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, -d, z, 1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, -d, -z, 1.0f, 0.0f, 0.0f});
-				vnbuffer.push_back(v6f{d, d, z, 1.0f, 0.0f, 0.0f});
+				vnbuffer.push_back(v6f{ d, d, -z, 1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, d, z, 1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, -d, -z, 1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, -d, z, 1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, -d, -z, 1.0f, 0.0f, 0.0f });
+				vnbuffer.push_back(v6f{ d, d, z, 1.0f, 0.0f, 0.0f });
 			}
 			glBindVertexArray(wallId[j]); // bind the wall j id
 			GLuint vboID;
@@ -242,15 +247,15 @@ void setVertexArrays() {
 			glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the Vertex buffer object
 			NumWallTriangles = (int)vnbuffer.size();
 			// fill the buffer
-			glBufferData(GL_ARRAY_BUFFER, NumWallTriangles*sizeof(v6f), vnbuffer[0].v, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, NumWallTriangles * sizeof(v6f), vnbuffer[0].v, GL_STATIC_DRAW);
 			// specify the location and data format of the vertex buffer array
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(v6f), (void*)0);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(v6f), (void*)(3*sizeof(GLfloat)));
-			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(0); // 0 FOR VERTEX COORDINATES
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(v6f), (void*)(3 * sizeof(GLfloat)));
+			glEnableVertexAttribArray(1); // 1 FOR NORMAL COORDINATES
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindVertexArray(0); // unbind the wall j id
-		}
+		} // BEFORE TO START A NEW CYCLE vnbuffer IS DESTROYED
 	}
 
 	/*********************SPHERE************************/
@@ -268,7 +273,7 @@ void setVertexArrays() {
 		float stackStep = Pi / stackCount;
 		float sectorAngle, stackAngle;
 
-		for(int i = 0; i <= stackCount; ++i)
+		for (int i = 0; i <= stackCount; ++i)
 		{
 			stackAngle = Pi / 2 - i * stackStep;        // starting from pi/2 to -pi/2
 			xy = radius * cosf(stackAngle);             // r * cos(u)
@@ -276,7 +281,7 @@ void setVertexArrays() {
 
 			// add (sectorCount+1) vertices per stack
 			// the first and last vertices have same position and normal, but different tex coords
-			for(int j = 0; j <= sectorCount; ++j)
+			for (int j = 0; j <= sectorCount; ++j)
 			{
 				sectorAngle = j * sectorStep;           // starting from 0 to 2pi
 
@@ -296,35 +301,35 @@ void setVertexArrays() {
 				vnbuffer2.push_back(nz);
 			}
 		}
-	// generate CCW index list of sphere triangles
-	// k1--k1+1
-	// |  / |
-	// | /  |
-	// k2--k2+1
+		// generate CCW index list of sphere triangles
+		// k1--k1+1
+		// |  / |
+		// | /  |
+		// k2--k2+1
 		vector<int> indices;
 		int k1, k2;
-		for(int i = 0; i < stackCount; ++i)
+		for (int i = 0; i < stackCount; ++i)
 		{
 			k1 = i * (sectorCount + 1);     // beginning of current stack
 			k2 = k1 + sectorCount + 1;      // beginning of next stack
 
-			for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+			for (int j = 0; j < sectorCount; ++j, ++k1, ++k2)
 			{
 				// 2 triangles per sector excluding first and last stacks
 				// k1 => k2 => k1+1
-				if(i != 0)
+				if (i != 0)
 				{
-						indices.push_back(k1);
-						indices.push_back(k2);
-						indices.push_back(k1 + 1);
+					indices.push_back(k1);
+					indices.push_back(k2);
+					indices.push_back(k1 + 1);
 				}
 
 				// k1+1 => k2 => k2+1
-				if(i != (stackCount-1))
+				if (i != (stackCount - 1))
 				{
-						indices.push_back(k1 + 1);
-						indices.push_back(k2);
-						indices.push_back(k2 + 1);
+					indices.push_back(k1 + 1);
+					indices.push_back(k2);
+					indices.push_back(k2 + 1);
 				}
 			}
 		}
@@ -335,15 +340,15 @@ void setVertexArrays() {
 		glBindVertexArray(sphereId); // bind the sphere id
 		glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind the vertex buffer
 		// fill the vertex buffer
-		glBufferData(GL_ARRAY_BUFFER, vnbuffer2.size()*sizeof(float), &vnbuffer2[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vnbuffer2.size() * sizeof(float), &vnbuffer2[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // bind the index buffer
 		NumSphereIndices = (int)indices.size();
 		// fill the index buffer
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, NumSphereIndices*sizeof(float), &indices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, NumSphereIndices * sizeof(float), &indices[0], GL_STATIC_DRAW);
 		// specify the location and data format of the vertex buffer array
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0); // unbind the sphere id
